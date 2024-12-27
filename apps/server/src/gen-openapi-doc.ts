@@ -1,7 +1,7 @@
 import fs from "fs/promises";
-import { honoApp } from "./hono.js";
+import { openapiHono } from "./hono.js";
 
-const openapiDoc = honoApp.getOpenAPIDocument({
+const openapiDoc = openapiHono.getOpenAPIDocument({
   info: {
     title: "User API",
     version: "1.0.0",

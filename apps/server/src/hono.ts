@@ -1,5 +1,6 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { apiReference } from "@scalar/hono-api-reference";
+import { Hono } from "hono";
 
 const OrganizationIdSchema = z.coerce
   .number()
@@ -184,7 +185,33 @@ const getUserinfoRoute = createRoute({
   },
 });
 
-export const honoApp = new OpenAPIHono()
+type Organization = z.infer<typeof OrganizationSchema>;
+
+type Variables = {
+  organization: Organization;
+  project: unknown;
+};
+
+const honoMiddlewares = new Hono<{ Variables: Variables }>()
+  .use("/organizations/:id", async (c, next) => {
+    c.set("organization", {
+      id: Number(c.req.param("id")),
+      name: "chot-inc",
+      displayName: "chot Inc.",
+    });
+
+    return next();
+  })
+  .use("/organizations/:id/projects/:projectId", async (c, next) => {
+    c.set("project", {
+      id: Number(c.req.param("projectId")),
+      name: "project",
+    });
+
+    return next();
+  });
+
+export const openapiHono = new OpenAPIHono<{ Variables: Variables }>()
 
   .openapi(getOrganizationsRoute, async (c) => {
     return c.json([
@@ -211,11 +238,8 @@ export const honoApp = new OpenAPIHono()
   })
 
   .openapi(getOrganizationRoute, async (c) => {
-    return c.json({
-      id: c.req.valid("param").id,
-      name: "chot-inc",
-      displayName: "chot Inc.",
-    });
+    const org = c.get("organization");
+    return c.json(org);
   })
 
   .openapi(putOrganizationRoute, async (c) => {
@@ -260,7 +284,7 @@ export const honoApp = new OpenAPIHono()
     },
   });
 
-honoApp.get(
+openapiHono.get(
   "/docs",
   apiReference({
     theme: "default",
@@ -270,3 +294,5 @@ honoApp.get(
     },
   }),
 );
+
+export const honoApp = honoMiddlewares.route("/", openapiHono);
