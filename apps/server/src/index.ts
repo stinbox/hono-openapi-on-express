@@ -1,6 +1,6 @@
 import { getRequestListener } from "@hono/node-server";
 import express from "express";
-import { honoApp } from "./hono";
+import { honoApp } from "./hono.js";
 
 const app = express();
 
