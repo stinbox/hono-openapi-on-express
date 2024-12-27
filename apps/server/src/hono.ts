@@ -193,7 +193,7 @@ type Variables = {
 };
 
 const honoMiddlewares = new Hono<{ Variables: Variables }>()
-  .use("/organizations/:id", async (c, next) => {
+  .use("/organizations/:id/*", async (c, next) => {
     c.set("organization", {
       id: Number(c.req.param("id")),
       name: "chot-inc",
@@ -202,7 +202,7 @@ const honoMiddlewares = new Hono<{ Variables: Variables }>()
 
     return next();
   })
-  .use("/organizations/:id/projects/:projectId", async (c, next) => {
+  .use("/organizations/:id/projects/:projectId/*", async (c, next) => {
     c.set("project", {
       id: Number(c.req.param("projectId")),
       name: "project",
