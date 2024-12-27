@@ -3,7 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts"
+    "dev": "pnpm run '/^dev:.*/'",
+    "dev:server": "tsx watch src/index.ts",
+    "dev:type": "tsc --watch"
+  },
+  "exports": {
+    "./client": "./dist/hono-client.js"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
